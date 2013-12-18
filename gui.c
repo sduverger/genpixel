@@ -36,9 +36,6 @@ gboolean image_clicked(GtkWidget *w, GdkEventButton *event, gpointer data)
    gboolean active;
    unsigned int n = (unsigned int)data;
 
-   if(!gtk_widget_get_sensitive(gtk_gen.images[n].chk))
-      return FALSE;
-
    active = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_gen.images[n].chk));
    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_gen.images[n].chk), !active);
    return TRUE;
@@ -51,22 +48,11 @@ void check_toggled(GtkToggleButton *b, gpointer data)
    gtk_gen.images[n].sts = gtk_toggle_button_get_active(b);
 
    if(gtk_gen.images[n].sts)
-   {
-      if(++gtk_gen.count == 3)
-      {
-	 gtk_widget_set_sensitive(gtk_gen.eb, FALSE);
-	 for(n=0 ; n<IMG_N ; n++)
-	    if(!gtk_gen.images[n].sts)
-	       gtk_widget_set_sensitive(gtk_gen.images[n].chk, FALSE);
-      }
-   }
-   else if(gtk_gen.count-- == 3)
-   {
-      gtk_widget_set_sensitive(gtk_gen.eb, TRUE);
-      for(n=0 ; n<IMG_N ; n++)
-	 if(!gtk_widget_get_sensitive(gtk_gen.images[n].chk))
-	    gtk_widget_set_sensitive(gtk_gen.images[n].chk, TRUE);
-   }
+      gtk_gen.count++;
+   else
+      gtk_gen.count--;
+
+   gtk_widget_set_sensitive(gtk_gen.eb, (gtk_gen.count == 3));
 }
 
 int init_gui(int argc, char **argv)
@@ -138,6 +124,8 @@ int init_gui(int argc, char **argv)
       gtk_grid_attach(GTK_GRID(grid), gtk_gen.images[i].chk, 1+(i%3), i/3, 1, 1);
       g_signal_connect(gtk_gen.images[i].chk, "toggled", G_CALLBACK(check_toggled), (gpointer)i);
    }
+
+   gtk_widget_set_sensitive(gtk_gen.eb, FALSE);
 
    gtk_widget_show_all(window);
    gtk_main();

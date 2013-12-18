@@ -1,7 +1,7 @@
-FLGS=`pkg-config --cflags gtk+-3.0`
+FLGS=`pkg-config --cflags gtk+-3.0` #-Wall -W
 LIBS=`pkg-config --libs gtk+-3.0`
 TARGET=genpixel
-FILES=main.o gui.o image.o
+FILES=main.o gui.o image.o equation.o operators.o utils.o
 
 %.o: %.c
 	gcc -g $(FLGS) -c $< -o $@

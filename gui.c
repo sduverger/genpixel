@@ -8,7 +8,7 @@ void generate()
    unsigned int n;
    for(n=0 ; n<IMG_N ; n++)
    {
-      init_image(n);
+      image_new(n);
       gtk_widget_queue_draw(gtk_gen.images[n].img);
    }
 }

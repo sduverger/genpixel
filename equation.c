@@ -86,5 +86,12 @@ void equation_init(equ_t *eq, unsigned int depth)
 
 double equation_eval(equ_t *eq, double x, double y)
 {
-   return __eval(eq->root, x, y);
+   double value = __eval(eq->root, x, y);
+
+   if(value < eq->min)
+      eq->min = value;
+   if(value > eq->max)
+      eq->max = value;
+
+   return value;
 }

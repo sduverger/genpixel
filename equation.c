@@ -95,3 +95,23 @@ double equation_eval(equ_t *eq, double x, double y)
 
    return value;
 }
+
+static void __print(node_t *node, FILE *file)
+{
+   if(!node) return;
+
+   if(node->lit->arity == 2)
+      fputc('(', file);
+
+   __print(node->left, file);
+   fputc(node->lit->repr, file);
+   __print(node->right, file);
+
+   if(node->lit->arity == 2)
+      fputc(')', file);
+}
+
+void equation_print(equ_t *eq, FILE *file)
+{
+   __print(eq->root, file);
+}

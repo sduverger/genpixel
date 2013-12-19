@@ -2,6 +2,7 @@
 #define __EQUATION_H__
 
 #include "utils.h"
+#include <stdio.h>
 
 #define	LIT_X      0
 #define	LIT_Y      1
@@ -51,8 +52,9 @@ typedef struct equation
 
 } equ_t;
 
-void equation_init(equ_t*, unsigned int);
+void   equation_init(equ_t*, unsigned int);
 double equation_eval(equ_t*, double, double);
+void   equation_print(equ_t*, FILE*);
 
 /* operators */
 double op_1st(double,double);

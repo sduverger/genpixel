@@ -2,6 +2,7 @@
 #define __IMAGE_H__
 
 #include <stdint.h>
+#include <time.h>
 #include "equation.h"
 
 #define IMG_N  6
@@ -24,6 +25,7 @@ typedef struct image
    {
       pixel_t pixel_at[IMG_H][IMG_W];
       pixel_t pixels[IMG_W*IMG_H];
+      uint8_t bytes[IMG_W*IMG_H*sizeof(pixel_t)];
    };
 
    union
@@ -32,11 +34,14 @@ typedef struct image
       eval_t evals[IMG_W*IMG_H];
    };
 
+   time_t       birth;
    equations_t  equ;
    void        *gui;
 
 } image_t;
 
-void image_new(int);
+void     image_new(int);
+image_t* image_get(int);
+void     image_save(int, char*);
 
 #endif

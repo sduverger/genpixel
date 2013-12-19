@@ -8,10 +8,10 @@
 
 typedef struct gtk_image
 {
-   GtkWidget     *img;
-   GtkWidget     *chk;
-   gboolean       sts;
-   struct image  *cnt;
+   GtkWidget     *view;
+   GtkWidget     *check;
+   gboolean       active;
+   struct image  *img;
 
 } gtkimg_t;
 
@@ -19,7 +19,7 @@ typedef struct gtk_gen
 {
    gtkimg_t     images[IMG_N];
    unsigned int count;
-   GtkWidget    *eb;
+   GtkWidget    *win, *eb, *sv;
 
 } gtkgen_t;
 

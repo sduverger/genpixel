@@ -82,6 +82,9 @@ void equation_init(equ_t *eq, unsigned int depth)
    eq->root = __gen(depth);
    eq->min =  10000000.0;
    eq->max = -10000000.0;
+#ifdef DEBUG
+   equation_print(eq, stdout);
+#endif
 }
 
 double equation_eval(equ_t *eq, double x, double y)

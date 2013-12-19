@@ -2,6 +2,7 @@
 #define __UTILS_H__
 
 #include <stdint.h>
+#include <stdlib.h>
 
 void error(const char*, ...);
 

@@ -19,7 +19,7 @@ typedef struct gtk_gen
 {
    gtkimg_t     images[IMG_N];
    unsigned int count, modifier, renderer;
-   GtkWidget    *win, *eb, *sv;
+   GtkWidget    *win, *gn, *eb, *sv;
 
 } gtkgen_t;
 

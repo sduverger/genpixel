@@ -6,10 +6,11 @@ static void generate()
 {
    size_t n;
    for(n=0 ; n<IMG_N ; n++)
-   {
-      image_new(n, gtk_gen.modifier, gtk_gen.renderer);
-      gtk_widget_queue_draw(gtk_gen.images[n].view);
-   }
+      if(gtk_gen.images[n].active)
+      {
+	 image_new(n, gtk_gen.modifier, gtk_gen.renderer);
+	 gtk_widget_queue_draw(gtk_gen.images[n].view);
+      }
 }
 
 static void evolve()
@@ -58,6 +59,23 @@ static void destroy_pixbuf(guchar *pixels, gpointer image)
    printf("!WRN! destroy pixbuf %p %p\n", pixels, image);
 }
 
+static void select_all(gboolean bool)
+{
+   size_t n;
+   for(n=0 ; n<IMG_N ; n++)
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_gen.images[n].check), bool);
+}
+
+static void all()
+{
+   select_all(TRUE);
+}
+
+static void clear()
+{
+   select_all(FALSE);
+}
+
 static gboolean image_clicked(GtkWidget *w, GdkEventButton *event, gpointer data)
 {
    gboolean active;
@@ -79,6 +97,7 @@ static void check_toggled(GtkToggleButton *b, gpointer data)
    else
       gtk_gen.count--;
 
+   gtk_widget_set_sensitive(gtk_gen.gn, (gtk_gen.count != 0));
    gtk_widget_set_sensitive(gtk_gen.sv, (gtk_gen.count != 0));
    gtk_widget_set_sensitive(gtk_gen.eb, (gtk_gen.count == 3));
 }
@@ -124,7 +143,7 @@ static void renderer_toggled(GtkToggleButton *b, gpointer data)
 
 int init_gui(int argc, char **argv)
 {
-   GtkWidget *bbox, *vbox, *hbox;
+   GtkWidget *bbox, *vbox, *hbox, *vbox2, *hbox2;
    GtkWidget *grid;
    GtkWidget *button;
    GtkWidget *ebox;
@@ -144,6 +163,8 @@ int init_gui(int argc, char **argv)
    gtk_container_add(GTK_CONTAINER(gtk_gen.win), vbox);
    gtk_box_set_spacing(GTK_BOX(vbox), 10);
 
+
+   /* image(s) buffer(s) */
    grid = gtk_grid_new();
    gtk_container_add(GTK_CONTAINER(vbox), grid);
    gtk_grid_set_row_spacing(GTK_GRID(grid), 5);
@@ -170,6 +191,8 @@ int init_gui(int argc, char **argv)
       gtk_grid_attach(GTK_GRID(grid), ebox, i%3, i/3, 1, 1);
    }
 
+
+   /* controls */
    sep = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
    gtk_container_add(GTK_CONTAINER(vbox), sep);
 
@@ -179,11 +202,10 @@ int init_gui(int argc, char **argv)
 
    bbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 2);
    gtk_container_add(GTK_CONTAINER(hbox), bbox);
-   //gtk_box_set_spacing(GTK_BOX(bbox), 5);
 
-   button = gtk_button_new_with_label("generate");
-   g_signal_connect(button, "clicked", G_CALLBACK(generate), NULL);
-   gtk_container_add(GTK_CONTAINER(bbox), button);
+   gtk_gen.gn = gtk_button_new_with_label("generate");
+   g_signal_connect(gtk_gen.gn, "clicked", G_CALLBACK(generate), NULL);
+   gtk_container_add(GTK_CONTAINER(bbox), gtk_gen.gn);
 
    gtk_gen.eb = gtk_button_new_with_label("evolve");
    g_signal_connect(gtk_gen.eb, "clicked", G_CALLBACK(evolve), NULL);
@@ -193,11 +215,16 @@ int init_gui(int argc, char **argv)
    g_signal_connect(gtk_gen.sv, "clicked", G_CALLBACK(save), NULL);
    gtk_container_add(GTK_CONTAINER(bbox), gtk_gen.sv);
 
+
+   /* image(s) chooser */
    sep = gtk_separator_new(GTK_ORIENTATION_VERTICAL);
    gtk_container_add(GTK_CONTAINER(hbox), sep);
 
+   vbox2 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 2);
+   gtk_container_add(GTK_CONTAINER(hbox), vbox2);
+
    grid = gtk_grid_new();
-   gtk_container_add(GTK_CONTAINER(hbox), grid);
+   gtk_container_add(GTK_CONTAINER(vbox2), grid);
 
    for(i=0 ; i<IMG_N ; i++)
    {
@@ -206,6 +233,20 @@ int init_gui(int argc, char **argv)
       g_signal_connect(gtk_gen.images[i].check, "toggled", G_CALLBACK(check_toggled), (gpointer)i);
    }
 
+   hbox2 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 2);
+   gtk_container_add(GTK_CONTAINER(vbox2), hbox2);
+   gtk_box_set_homogeneous(GTK_BOX(hbox2), TRUE);
+
+   button = gtk_button_new_with_label("all");
+   g_signal_connect(button, "clicked", G_CALLBACK(all), NULL);
+   gtk_container_add(GTK_CONTAINER(hbox2), button);
+
+   button = gtk_button_new_with_label("clear");
+   g_signal_connect(button, "clicked", G_CALLBACK(clear), NULL);
+   gtk_container_add(GTK_CONTAINER(hbox2), button);
+
+
+   /* modifiers */
    sep = gtk_separator_new(GTK_ORIENTATION_VERTICAL);
    gtk_container_add(GTK_CONTAINER(hbox), sep);
 
@@ -223,6 +264,8 @@ int init_gui(int argc, char **argv)
    gtk_container_add(GTK_CONTAINER(bbox), button);
    g_signal_connect(button, "toggled", G_CALLBACK(mode_toggled), (gpointer)IMG_M_LIN);
 
+
+   /* renderers */
    sep = gtk_separator_new(GTK_ORIENTATION_VERTICAL);
    gtk_container_add(GTK_CONTAINER(hbox), sep);
 
@@ -265,9 +308,7 @@ int init_gui(int argc, char **argv)
    gtk_grid_attach(GTK_GRID(grid), button, 2, 2, 1, 1);
    g_signal_connect(button, "toggled", G_CALLBACK(renderer_toggled), (gpointer)IMG_R_CB);
 
-   gtk_widget_set_sensitive(gtk_gen.eb, FALSE);
-   gtk_widget_set_sensitive(gtk_gen.sv, FALSE);
-
+   select_all(TRUE);
    gtk_widget_show_all(gtk_gen.win);
    gtk_main();
    return 0;

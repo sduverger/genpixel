@@ -1,9 +1,17 @@
 #include "equation.h"
+#include "operators.h"
 #include <stdlib.h>
 
 static lit_t litterals[] = {
    {.arity = 0, .repr = 'x', .op = op_1st},
    {.arity = 0, .repr = 'y', .op = op_2nd},
+   {.arity = 1, .repr = '~', .op = op_not},
+   {.arity = 1, .repr = 'S', .op = op_sin},
+   {.arity = 1, .repr = 'C', .op = op_cos},
+   {.arity = 1, .repr = 'T', .op = op_tan},
+   {.arity = 1, .repr = 'L', .op = op_log},
+   {.arity = 1, .repr = 'E', .op = op_exp},
+   {.arity = 1, .repr = 'I', .op = op_inv},
    {.arity = 2, .repr = '+', .op = op_add},
    {.arity = 2, .repr = '-', .op = op_sub},
    {.arity = 2, .repr = '*', .op = op_mul},
@@ -11,12 +19,6 @@ static lit_t litterals[] = {
    {.arity = 2, .repr = '&', .op = op_and},
    {.arity = 2, .repr = '|', .op = op_or },
    {.arity = 2, .repr = '^', .op = op_xor},
-   {.arity = 1, .repr = 'S', .op = op_sin},
-   {.arity = 1, .repr = 'C', .op = op_cos},
-   {.arity = 1, .repr = 'T', .op = op_tan},
-   {.arity = 1, .repr = 'L', .op = op_log},
-   {.arity = 1, .repr = 'E', .op = op_exp},
-   {.arity = 1, .repr = 'I', .op = op_inv},
 };
 
 static inline lit_t* lit_rand()
@@ -84,6 +86,7 @@ void equation_init(equ_t *eq, unsigned int depth)
    eq->max = -10000000.0;
 #ifdef DEBUG
    equation_print(eq, stdout);
+   printf("\n");
 #endif
 }
 

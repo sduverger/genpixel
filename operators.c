@@ -1,4 +1,5 @@
 #include <math.h>
+#include <stdlib.h>
 
 double op_1st(double x, double y)
 {
@@ -44,6 +45,11 @@ double op_or(double x, double y)
 double op_xor(double x, double y)
 {
    return (double)((unsigned long)x ^ (unsigned long)y);
+}
+
+double op_not(double x, double y)
+{
+   return (double)(~(unsigned long)x);
 }
 
 double op_sin(double x, double y)
